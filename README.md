@@ -1,26 +1,21 @@
-# chatgath
+# Chatgath
 
 Pour modifier et ajouter un module personnalisé dans Metasploit sur votre Kali Linux, vous devez suivre ces étapes :
 
-Étape 1 : Localiser le répertoire des modules Metasploit
+-> Localiser le répertoire des modules Metasploit
 Les modules personnalisés doivent être placés dans le répertoire ~/.msf4/modules/ pour être reconnus par Metasploit. Si ce répertoire n'existe pas, vous devrez le créer.
 
 Créez le répertoire pour les modules auxiliaires si ce n'est pas déjà fait :
-bash
-Copier le code
 mkdir -p ~/.msf4/modules/auxiliary/scanner/scada
 Ce répertoire est où Metasploit recherche les modules ajoutés par l'utilisateur.
 
-Étape 2 : Créer un fichier pour le nouveau module
+-> Créer un fichier pour le nouveau module
 Créer un nouveau fichier Ruby : Créez un nouveau fichier pour votre module Modbus Scanner dans le dossier approprié. Par exemple :
 
-bash
-Copier le code
 nano ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
 Coller le code du module : Collez le code Ruby que vous avez modifié (le module de Modbus Scanner avec les UNIT_IDs automatiques) dans ce fichier. Voici le code :
 
-ruby
-Copier le code
+
 class MetasploitModule < Msf::Auxiliary
   include Msf::Exploit::Remote::Tcp
   include Msf::Auxiliary::Scanner
@@ -96,31 +91,25 @@ Configurer les options et lancer le module :
 
 Configurez l'adresse IP de la cible (par exemple) :
 
-bash
-Copier le code
 set RHOSTS <target_ip>
 Lancez le scan :
 
-bash
-Copier le code
 run
-Étape 4 : Résolution des problèmes
+
+
+-> Résolution des problèmes
 Si le module ne se charge pas correctement ou si vous rencontrez des problèmes, voici quelques étapes à suivre :
 
 Vérifier le chemin :
 
 Assurez-vous que le module est bien placé dans le répertoire correct :
-bash
-Copier le code
+
 ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
 Vérifier les permissions :
 
 Assurez-vous que le fichier a les permissions correctes :
-bash
-Copier le code
+
 chmod 644 ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
 Redémarrer Metasploit :
 
 Si le module ne se charge pas, essayez de redémarrer Metasploit.
-Conclusion
-En suivant ces étapes, vous avez ajouté un module personnalisé Modbus Scanner à Metasploit sur votre Kali Linux. Ce module scanne automatiquement tous les UNIT_IDs de 1 à 255 sans avoir besoin de spécifier un ID au préalable. Vous pouvez maintenant l'utiliser pour scanner des dispositifs Modbus sur le réseau et identifier ceux qui sont actifs.
