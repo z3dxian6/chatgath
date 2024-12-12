@@ -1,21 +1,49 @@
-# Chatgath
+## **Modbus Scanner dans Metasploit**
 
-Pour modifier et ajouter un module personnalisé dans Metasploit sur votre Kali Linux, vous devez suivre ces étapes :
+### **Introduction**
 
--> Localiser le répertoire des modules Metasploit
-Les modules personnalisés doivent être placés dans le répertoire ~/.msf4/modules/ pour être reconnus par Metasploit. Si ce répertoire n'existe pas, vous devrez le créer.
+Ce projet décrit comment créer et intégrer un module personnalisé dans Metasploit pour scanner des services **Modbus** sans dépendre d'un **UNIT_ID** précis. L'objectif est de détecter les services Modbus actifs en testant toutes les adresses **UNIT_ID** disponibles (1 à 255).
 
-Créez le répertoire pour les modules auxiliaires si ce n'est pas déjà fait :
+### **Structure du répertoire**
+
+Voici la structure des fichiers nécessaires :
+
+```
+~/.msf4/
+└── modules/
+    └── auxiliary/
+        └── scanner/
+            └── scada/
+                └── modbus_scanner.rb
+```
+
+### **Prérequis**
+
+- **Kali Linux** (ou un autre environnement avec Metasploit installé)
+- Accès au répertoire `~/.msf4/modules/`
+- Connaissance des bases de Modbus et Ruby pour personnaliser le code.
+
+### **Étapes d'intégration**
+
+#### **1. Créer le répertoire pour les modules personnalisés**
+
+Exécutez cette commande pour créer l'arborescence des répertoires où sera stocké le module :
+
+```bash
 mkdir -p ~/.msf4/modules/auxiliary/scanner/scada
-Ce répertoire est où Metasploit recherche les modules ajoutés par l'utilisateur.
+```
 
--> Créer un fichier pour le nouveau module
-Créer un nouveau fichier Ruby : Créez un nouveau fichier pour votre module Modbus Scanner dans le dossier approprié. Par exemple :
+#### **2. Ajouter le code du module**
 
+Créez le fichier Ruby pour le module personnalisé :
+
+```bash
 nano ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
-Coller le code du module : Collez le code Ruby que vous avez modifié (le module de Modbus Scanner avec les UNIT_IDs automatiques) dans ce fichier. Voici le code :
+```
 
+Collez ensuite le code suivant dans le fichier **modbus_scanner.rb** :
 
+```ruby
 class MetasploitModule < Msf::Auxiliary
   include Msf::Exploit::Remote::Tcp
   include Msf::Auxiliary::Scanner
@@ -72,44 +100,72 @@ class MetasploitModule < Msf::Auxiliary
     end
   end
 end
-Enregistrer le fichier :
+```
 
-Appuyez sur Ctrl + O pour sauvegarder le fichier, puis Enter pour confirmer.
-Appuyez sur Ctrl + X pour quitter l'éditeur.
-Étape 3 : Vérifier que le module est reconnu
-Lancer Metasploit : Ouvrez un terminal sur votre Kali et lancez Metasploit :
+#### **3. Vérifier les permissions**
 
-bash
-Copier le code
-msfconsole
-Charger le module personnalisé : Dans Metasploit, vous pouvez maintenant essayer de charger votre module personnalisé. Comme vous l'avez placé dans le répertoire ~/.msf4/modules/auxiliary/scanner/scada/, vous pouvez l'appeler directement :
+Assurez-vous que le fichier possède les permissions correctes pour être utilisé par Metasploit :
 
-bash
-Copier le code
-use auxiliary/scanner/scada/modbus_scanner
-Configurer les options et lancer le module :
-
-Configurez l'adresse IP de la cible (par exemple) :
-
-set RHOSTS <target_ip>
-Lancez le scan :
-
-run
-
-
--> Résolution des problèmes
-Si le module ne se charge pas correctement ou si vous rencontrez des problèmes, voici quelques étapes à suivre :
-
-Vérifier le chemin :
-
-Assurez-vous que le module est bien placé dans le répertoire correct :
-
-~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
-Vérifier les permissions :
-
-Assurez-vous que le fichier a les permissions correctes :
-
+```bash
 chmod 644 ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
-Redémarrer Metasploit :
+```
 
-Si le module ne se charge pas, essayez de redémarrer Metasploit.
+#### **4. Charger le module dans Metasploit**
+
+Lancez Metasploit :
+
+```bash
+msfconsole
+```
+
+Puis, chargez le module personnalisé :
+
+```bash
+use auxiliary/scanner/scada/modbus_scanner
+```
+
+#### **5. Configurer et exécuter le module**
+
+1. Configurez les options nécessaires, par exemple :
+
+```bash
+set RHOSTS <adresse_IP_cible>
+set TIMEOUT 10
+```
+
+2. Lancez le scan :
+
+```bash
+run
+```
+
+### **Résolution des problèmes**
+
+1. **Module non détecté ?**
+   - Vérifiez le chemin du fichier :
+     ```bash
+     ~/.msf4/modules/auxiliary/scanner/scada/modbus_scanner.rb
+     ```
+   - Redémarrez Metasploit après avoir ajouté le fichier.
+
+2. **Erreur de syntaxe ?**
+   - Vérifiez la syntaxe du fichier Ruby.
+
+3. **Pas de réponse Modbus ?**
+   - Assurez-vous que la cible écoute bien sur le port 502.
+   - Testez la connectivité réseau avec un outil comme `nmap`.
+
+---
+
+### **Améliorations possibles**
+
+- Ajouter des fonctionnalités pour lire/écrire dans les registres Modbus.
+- Implémenter un mode "verbose" pour afficher les trames complètes.
+
+### **Licence**
+
+Ce projet est soumis à la licence MIT. Consultez le fichier `LICENSE` pour plus d'informations.
+
+---
+
+Avec ce README, l'intégration de votre module personnalisé dans Metasploit devient simple et professionnelle !
